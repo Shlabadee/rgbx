@@ -6,7 +6,7 @@
 
 int main(int argc, const char** argv)
 {
-	printf("rgbx v1.0.0 - Shlabadee\n");
+	printf("rgbx v1.0.1 - Shlabadee\n");
 	int rc = 0;
 	uint16_t* bin = NULL;
 	ProgramSettings settings;
