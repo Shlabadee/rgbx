@@ -57,10 +57,10 @@ int handle_bit_depths(ProgramSettings* settings)
 	if (settings->verbose)
 	{
 		printf("Packed bit depth: %i\n", settings->packed_bit_depth);
-		printf("r_bit: %i\n", r_max);
-		printf("g_bit: %i\n", g_max);
-		printf("b_bit: %i\n", b_max);
-		printf("a_bit: %i\n", a_max);
+		printf("r_bit: %i\n", r_bit);
+		printf("g_bit: %i\n", g_bit);
+		printf("b_bit: %i\n", b_bit);
+		printf("a_bit: %i\n", a_bit);
 		printf("Total bit depth: %i\n", total_bit_depth);
 	}
 
