@@ -1,0 +1,3 @@
+[submodule "external/argo"]
+	path = external/argo
+	url = https://github.com/Shlabadee/argo.git

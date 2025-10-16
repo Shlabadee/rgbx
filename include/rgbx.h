@@ -14,7 +14,7 @@ extern "C" {
 
 extern const char* onoff_strings[2];
 
-int setup(int argc, const char** argv, ProgramSettings* settings);
+int setup(int argc, char** argv, ProgramSettings* settings);
 int handle_bit_depths(ProgramSettings* settings);
 uint16_t* get_png_to_bin(ProgramSettings* settings);
 uint16_t* get_file_to_bin(ProgramSettings* settings);

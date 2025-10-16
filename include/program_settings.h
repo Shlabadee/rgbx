@@ -28,6 +28,7 @@ typedef struct ProgramSettings
 	bool serpentine;
 	bool dither_alpha;
 	bool legal;
+	bool show_version;
 	bool verbose;
 	bool auto_generated_ofname;
 } ProgramSettings;

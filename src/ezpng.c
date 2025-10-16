@@ -29,7 +29,7 @@ static const char* ezpng_error_msgs[] = {"No error.",
 
 static unsigned int current_error = EZPNG_ERROR_NONE;
 
-const char* ezpng_get_error()
+const char* ezpng_get_error(void)
 {
 	if (current_error < (sizeof(ezpng_error_msgs) / sizeof(ezpng_error_msgs[0])))
 		return ezpng_error_msgs[current_error];
@@ -44,12 +44,12 @@ void ezpng_print_error(const char* msg)
 
 // decoder
 
-struct ezpng_decoder
+typedef struct ezpng_decoder
 {
 	int width;
 	int height;
 	ezpng_rgba* pixels;
-};
+} ezpng_decoder;
 
 ezpng_decoder* ezpng_decoder_open(const char* filename)
 {

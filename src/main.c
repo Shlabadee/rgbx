@@ -4,9 +4,9 @@
 
 #include "rgbx.h"
 
-int main(int argc, const char** argv)
+int main(int argc, char** argv)
 {
-	printf("rgbx v1.0.1 - Shlabadee\n");
+	printf("rgbx v1.1.0 - Shlabadee\n");
 	int rc = 0;
 	uint16_t* bin = NULL;
 	ProgramSettings settings;
@@ -16,6 +16,9 @@ int main(int argc, const char** argv)
 		rc = 1;
 		goto cleanup;
 	}
+
+	if (settings.show_version)
+		return 0;
 
 	if (settings.verbose)
 	{

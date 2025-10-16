@@ -6,19 +6,23 @@
 
 #include <string.h>
 
-#include "argparse.h"
+#include "argo.h"
 #include "program_settings.h"
 #include "rgbx.h"
 
-const char* onoff_strings[2] = {"OFF", "ON"};
+#define OPTION_HELP 0
+#define OPTION_VERSION 1
+#define OPTION_INPUT 2
+#define OPTION_OUTPUT 3
+#define OPTION_MODE 4
+#define OPTION_BITS 5
+#define OPTION_DITHER 6
+#define OPTION_SERPENTINE 7
+#define OPTION_ALPHA 8
+#define OPTION_LEGAL 9
+#define OPTION_VERBOSE 10
 
-// clang-format off
-static const char* const usage[] =
-{
-    "rgbx [options]",
-    NULL
-};
-// clang-format on
+const char* onoff_strings[2] = {"OFF", "ON"};
 
 void auto_renamer(char* input_file_path, char* extension, char* output_file_path)
 {
@@ -47,7 +51,7 @@ void auto_renamer(char* input_file_path, char* extension, char* output_file_path
 	snprintf(output_file_path + dir_len, 512 - dir_len, "%s_o.%s", base, extension);
 }
 
-void print_mode_help()
+void print_mode_help(void)
 {
 	const char* mode_help[] = {"This program has three modes:\n\n",
 	                           "\tp2p - PNG to PNG (default)\n", "\tp2b - PNG to BIN\n",
@@ -59,57 +63,67 @@ void print_mode_help()
 	}
 }
 
-int setup(int argc, const char** argv, ProgramSettings* settings)
+int setup(int argc, char** argv, ProgramSettings* settings)
 {
-	const char* mode_input = NULL;
-	int pbd_input = 0;
-	int dither_input = 0;
-	int serpentine_input = 0;
-	int dither_alpha_input = 0;
-	int legal_input = 0;
-	int verbose_input = 0;
+	char* mode_input = NULL;
 
 	settings->input_file_path = NULL;
 	settings->output_file_path = NULL;
 	settings->auto_generated_ofname = false;
 
-	struct argparse_option options[] = {
-	    OPT_HELP(),
-	    OPT_STRING('i', "input", &settings->input_file_path, "input file"),
-	    OPT_STRING('o', "output", &settings->output_file_path, "output file"),
-	    OPT_STRING('m', "mode", &mode_input, "mode, see --mode help"),
-	    OPT_INTEGER('b', "bits", &pbd_input, "bits per component, e.g. -b 0565 for RGB565"),
-	    OPT_BOOLEAN('d', "dither", &dither_input, "enable dithering"),
-	    OPT_BOOLEAN('s', "serpentine", &serpentine_input, "enable serpentine dithering"),
-	    OPT_BOOLEAN('a', "dither-alpha", &dither_alpha_input, "dither alpha"),
-	    OPT_BOOLEAN('l', "legal", &legal_input, "show legal information and exit"),
-	    OPT_BOOLEAN('v', "verbose", &verbose_input, "verbose output"),
-	    OPT_END(),
+	ArgoOption options[] = {
+	    Argo_Set('h', "help", ArgoOptionType_Boolean, "show this help message and exit"),
+	    Argo_Set(Argo_NoShortFlag, "version", ArgoOptionType_Boolean,
+	             "show the program version and exit"),
+	    Argo_Set('i', "input", ArgoOptionType_String, "input file"),
+	    Argo_Set('o', "output", ArgoOptionType_String, "output file"),
+	    Argo_Set('m', "mode", ArgoOptionType_String, "mode, see --mode help"),
+	    Argo_Set('b', "bits", ArgoOptionType_Integer,
+	             "bits per component, e.g. -b 0565 for RGB565"),
+	    Argo_Set('d', "dither", ArgoOptionType_Boolean, "enable dithering"),
+	    Argo_Set('s', "serpentine", ArgoOptionType_Boolean, "enable serpentine dithering"),
+	    Argo_Set('a', "alpha-dithering", ArgoOptionType_Boolean, "dither alpha"),
+	    Argo_Set('l', "legal", ArgoOptionType_Boolean, "show legal information and exit"),
+	    Argo_Set('v', "verbose", ArgoOptionType_Boolean, "verbose output"),
 	};
 
-	struct argparse argparse_instance;
-	argparse_init(&argparse_instance, options, usage, 0);
-	argparse_instance.epilog =
-	    "\nRegarding --bits:\n\nEach color component is stored in the ARGB format. So if you "
-	    "wanted the\nRGB565 color space, you could either use 565 or 0565. This allows you to "
-	    "skip\nthe alpha channel, which will default it to 0, or no transparency.\n";
-	(void)argparse_parse(&argparse_instance, argc, argv);
+	ArgoInstance instance;
+	ArgoReturnType rt = Argo_Tokenize(&instance, options, sizeof(options) / sizeof(options[0]),
+	                                  argc, argv, true);
 
-	if (argc == 1)
+	if (rt == ArgoReturnType_Failure)
 	{
-		argparse_usage(&argparse_instance);
+		Argo_PrintError();
 		return 0;
 	}
 
-	settings->dither = dither_input == 1;
-	settings->serpentine = serpentine_input == 1;
-	settings->dither_alpha = dither_alpha_input == 1;
-	settings->legal = legal_input == 1;
-	settings->verbose = verbose_input == 1;
+	if (argc == 1 || options[OPTION_HELP].found)
+	{
+		puts("");
+		Argo_Help(&instance);
+		printf("Regarding --bits:\n\nEach color component is stored in the ARGB format. So "
+		       "if you wanted the\nRGB565 color space, you could either use 565 or 0565. This "
+		       "allows you to skip\nthe alpha channel, which will default it to 0, or no "
+		       "transparency.\n\n");
+		return 0;
+	}
+
+	settings->dither = options[OPTION_DITHER].found;
+	settings->serpentine = options[OPTION_SERPENTINE].found;
+	settings->dither_alpha = options[OPTION_ALPHA].found;
+	settings->legal = options[OPTION_LEGAL].found;
+	settings->show_version = options[OPTION_VERSION].found;
+	settings->verbose = options[OPTION_VERBOSE].found;
+
+	// Just show the current version
+	if (settings->show_version)
+		return 1;
 
 	// Skip to legal
 	if (settings->legal)
 		return 1;
+
+	mode_input = options[OPTION_MODE].value;
 
 	if (mode_input == NULL || strcmp(mode_input, "p2p") == 0 || strcmp(mode_input, "") == 0)
 	{
@@ -134,11 +148,15 @@ int setup(int argc, const char** argv, ProgramSettings* settings)
 		return 0;
 	}
 
+	settings->input_file_path = options[OPTION_INPUT].value;
+
 	if (settings->input_file_path == NULL)
 	{
 		seprint("An input file must be provided");
 		return 0;
 	}
+
+	settings->output_file_path = options[OPTION_OUTPUT].value;
 
 	if (settings->output_file_path == NULL)
 	{
@@ -161,13 +179,13 @@ int setup(int argc, const char** argv, ProgramSettings* settings)
 	if (settings->mode == MODETYPE_BIN_TO_PNG)
 		return 1;
 
-	settings->packed_bit_depth = (int16_t)pbd_input;
-
-	if (settings->packed_bit_depth == 0)
+	if (options[OPTION_BITS].value == NULL)
 	{
 		seprint("--bits is required");
 		return 0;
 	}
+
+	settings->packed_bit_depth = (int16_t)strtol(options[OPTION_BITS].value, NULL, 10);
 
 	if (!handle_bit_depths(settings))
 		return 0;

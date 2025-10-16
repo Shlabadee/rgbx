@@ -26,7 +26,7 @@ const ezpng_rgba* ezpng_decoder_get_data(ezpng_decoder* dec);
 typedef struct ezpng_encoder ezpng_encoder;
 int ezpng_write_decoded(const char* filename, const ezpng_decoder* dec);
 int ezpng_write_rgba(const char* filename, const ezpng_rgba* pixels, int width, int height);
-const char* ezpng_get_error();
+const char* ezpng_get_error(void);
 void ezpng_print_error(const char* msg);
 
 #ifdef __cplusplus

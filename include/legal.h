@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-#define LEGAL_TXT_SIZE 168
+#define LEGAL_TXT_SIZE 144
 extern const char* legal_txt[LEGAL_TXT_SIZE];
-void print_legal();
+void print_legal(void);
 
 #ifdef __cplusplus
 }

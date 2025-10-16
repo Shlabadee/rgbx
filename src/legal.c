@@ -3,10 +3,10 @@
 
 #include "legal.h"
 
-const char* legal_txt[LEGAL_TXT_SIZE] = {
-    "This program uses libpng and argparse as provided by their respective owners.",
+const char* legal_txt[] = {
+    "This program uses libpng as provided by its owner.",
     "",
-    "Below are their respective licenses.",
+    "What follows is libpng's license.",
     "",
     "---------|---------|---------|---------|---------|---------|---------|---------|",
     "                               libpng License",
@@ -147,34 +147,10 @@ const char* legal_txt[LEGAL_TXT_SIZE] = {
     "this source code in a product, acknowledgment is not required but would",
     "be appreciated.",
     "",
-    "---------|---------|---------|---------|---------|---------|---------|---------|",
-    "                              argparse License",
-    "---------|---------|---------|---------|---------|---------|---------|---------|",
-    "",
-    "The MIT License (MIT)",
-    "",
-    "Copyright (c) 2012-2013 Yecheng Fu <cofyc.jackson@gmail.com>",
-    "",
-    "Permission is hereby granted, free of charge, to any person obtaining a copy",
-    "of this software and associated documentation files (the \"Software\"), to deal",
-    "in the Software without restriction, including without limitation the rights",
-    "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
-    "copies of the Software, and to permit persons to whom the Software is",
-    "furnished to do so, subject to the following conditions:",
-    "",
-    "The above copyright notice and this permission notice shall be included in",
-    "all copies or substantial portions of the Software.",
-    "",
-    "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-    "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-    "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-    "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-    "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
-    "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN",
-    "THE SOFTWARE.",
+    "This program is not endorsed by libpng.",
 };
 
-void print_legal()
+void print_legal(void)
 {
 	for (int i = 0; i < LEGAL_TXT_SIZE; ++i)
 	{
